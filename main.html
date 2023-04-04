@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>My Page</title>
+    <style>
+        #form-block {
+            width: 400px;
+            margin: 20px;
+            padding: 10px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        #image-block {
+            width: 400px;
+            height: 400px;
+            margin: 20px;
+            padding: 10px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .spinner {
+            border: 5px solid rgba(0, 0, 0, 0.1);
+            border-top-color: #333;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s ease-in-out infinite;
+        }
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+    </style>
+</head>
+
+<body>
+    <div id="form-block">
+        <form method="post" action="/upload" enctype="multipart/form-data">
+            <label for="text">Enter some text:</label>
+
+            <textarea id="text" name="content" rows="4" cols="50"></textarea>
+
+            <input id="submit-btn" type="submit" value="Send">
+            <div id="spinner" class="spinner" style="display: none;"></div>
+
+        </form>
+    </div>
+    <div id="image-block"></div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script>
+
+        // JavaScript code
+        $(document).ready(function() {
+        $('form').on('submit', function(event) {
+            event.preventDefault();
+            var formData = new FormData(this);
+            $('#submit-btn').prop('disabled', true); // disable the button
+            $('#text').val('');
+            $('#spinner').show(); // show the spinner
+            $.ajax({
+            url: '/gen',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(data) {
+                console.log(data);
+                const jdata = JSON.parse(data);
+                $('#image-block').html('<img src="' + jdata.data[0].url + '">');
+                $('#spinner').hide(); // hide the spinner after receiving the response
+                $('#submit-btn').prop('disabled', false); // enable the button
+            }
+            });
+        });
+        });
+
+    </script>
+</body>
+
+</html>
