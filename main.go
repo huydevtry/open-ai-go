@@ -11,6 +11,9 @@ import (
 
 func main() {
 
+	fs := http.FileServer(http.Dir("static"))
+	http.Handle("/static/", http.StripPrefix("/static/", fs))
+
 	http.HandleFunc("/", handler)
 	http.HandleFunc("/gen", generateHandler)
 
@@ -39,11 +42,11 @@ func generateHandler(w http.ResponseWriter, r *http.Request) {
 
 	url := "https://api.openai.com/v1/images/generations"
 	method := "POST"
-
+	openaiKey := os.Getenv("OPENAI_KEY") //Your API key
 	param := fmt.Sprintf(`{
 		"prompt": "%s",
 		"n": 1,
-		"size": "1024x1024",
+		"size": "256x256",
 		"response_format": "url"
 	  }`, content)
 
@@ -56,11 +59,9 @@ func generateHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(err)
 		return
 	}
-	openaiKey := os.Getenv("OPENAI_KEY") //Your API key
 
 	req.Header.Add("Authorization", "Bearer "+openaiKey)
 	req.Header.Add("Content-Type", "application/json")
-
 	res, err := client.Do(req)
 	if err != nil {
 		fmt.Println(err)
