@@ -6,25 +6,6 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
 
     <style>
-        #form-block {
-            width: 400px;
-            margin: 20px;
-            padding: 10px;
-            text-align: center;
-            font-size: 24px;
-            font-weight: bold;
-        }
-
-        #image-block {
-            width: 400px;
-            height: 400px;
-            margin: 20px;
-            padding: 10px;
-            text-align: center;
-            font-size: 24px;
-            font-weight: bold;
-        }
-
         .spinner {
             border: 5px solid rgba(0, 0, 0, 0.1);
             border-top-color: #333;
@@ -47,43 +28,45 @@
 
 <body>
 
+    <nav class="navbar bg-body-tertiary">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="#">AI Image Generator</a>
+        </div>
+      </nav>
+
     <div class="container">
-        <div class="row justify-content-center">
-          <div class="col-md-6">
+        <div class="row">
+            
+        </div>
+        <div class="row">
+
+            <!-- FORM -->
+
+          <div class="col-4">
             <form method="post" action="/upload" enctype="multipart/form-data">
-              <div class="form-group">
-                <label for="text">Enter some text:</label>
-                <input type="text" class="form-control" id="text" name="content" placeholder="Enter some text">
-              </div>
+                <div class="mb-3">
+                    <div class="alert alert-danger" id="error" style="display: none;" role="alert">
+                        This is a danger alert—check it out!
+                      </div>
+                    <label for="exampleFormControlTextarea1" class="form-label">Enter some text</label>
+                    <textarea class="form-control" id="text" name="content" rows="3"></textarea>
+                  </div>
               <button id="submit-btn" type="submit" class="btn btn-primary">Submit</button>
               <div id="spinner" class="spinner" style="display: none;"></div>
             </form>
           </div>
-        </div>
-        <div class="row justify-content-center mt-5">
-          <div class="col-md-6">
+
+          <!-- DISPLAY IMAGE -->
+          <div class="col-8">
             <div id="image-block">
               <!-- Image will be displayed here -->
+              <img class="w-100" src="https://oaidalleapiprodscus.blob.core.windows.net/private/org-IVuL8wMBvBXnM3f9JkopmaTw/user-riHgj1M0OEusSloUe5egLdg2/img-Z9P7D1RMv0NFqI8o36pGmbPJ.png?st=2023-04-05T13%3A46%3A42Z&amp;se=2023-04-05T15%3A46%3A42Z&amp;sp=r&amp;sv=2021-08-06&amp;sr=b&amp;rscd=inline&amp;rsct=image/png&amp;skoid=6aaadede-4fb3-4698-a8f6-684d7786b067&amp;sktid=a48cca56-e6da-484e-a814-9c849652bcb3&amp;skt=2023-04-05T14%3A46%3A26Z&amp;ske=2023-04-06T14%3A46%3A26Z&amp;sks=b&amp;skv=2021-08-06&amp;sig=r6bEPk9SbSfisfLCc9EgbcUZMbhZOu9EYcv2wO5ObvQ%3D">
             </div>
           </div>
+
         </div>
+  
       </div>
-
-
-
-
-    <div id="form-block">
-        <form method="post" action="/upload" enctype="multipart/form-data">
-            <label for="text">Enter some text:</label>
-
-            <textarea id="text" name="content" rows="4" cols="50"></textarea>
-
-            <input id="submit-btn" type="submit" value="Send">
-            <div id="spinner" class="spinner" style="display: none;"></div>
-
-        </form>
-    </div>
-    <div id="image-block"></div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
@@ -93,6 +76,13 @@
         $('form').on('submit', function(event) {
             event.preventDefault();
             var formData = new FormData(this);
+            var content = $('#text').val(); // get the value of the "content" input
+            if (!content) {
+                $('#error').show();
+                $('#error').html('Error: content cannot be empty.'); // display an error message if the "content" input is empty
+                return;
+            }
+            $('#error').hide();
             $('#submit-btn').prop('disabled', true); // disable the button
             $('#text').val('');
             $('#spinner').show(); // show the spinner
@@ -104,8 +94,7 @@
             contentType: false,
             success: function(data) {
                 console.log(data);
-                const jdata = JSON.parse(data);
-                $('#image-block').html('<img src="' + jdata.data[0].url + '">');
+                $('#image-block').html('<img class="w-100" src="' + data + '">');
                 $('#spinner').hide(); // hide the spinner after receiving the response
                 $('#submit-btn').prop('disabled', false); // enable the button
             }
