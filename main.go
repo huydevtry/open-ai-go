@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -18,6 +19,13 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, "main.html")
 }
 
+type Response struct {
+	Created int64
+	Data    []struct {
+		Url string
+	}
+}
+
 func generateHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
@@ -25,17 +33,19 @@ func generateHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Handle parameter
-	content := r.FormValue("content")
+	content := strings.TrimSpace(r.FormValue("content"))
 
 	url := "https://api.openai.com/v1/images/generations"
 	method := "POST"
 
-	payload := strings.NewReader(`{
-	"prompt": "` + content + `",
-	"n": 1,
-	"size": "1024x1024",
-	"response_format": "url"
-  }`)
+	param := fmt.Sprintf(`{
+		"prompt": "%s",
+		"n": 1,
+		"size": "1024x1024",
+		"response_format": "url"
+	  }`, content)
+
+	payload := strings.NewReader(param)
 
 	client := &http.Client{}
 	req, err := http.NewRequest(method, url, payload)
@@ -60,6 +70,9 @@ func generateHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var response Response
+	json.Unmarshal([]byte(body), &response)
+
 	// Send response
-	fmt.Fprintf(w, "%s", body)
+	fmt.Fprintf(w, "%s", response.Data[0].Url)
 }
