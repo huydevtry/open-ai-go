@@ -90,8 +90,7 @@
             contentType: false,
             success: function(data) {
                 console.log(data);
-                const jdata = JSON.parse(data);
-                $('#image-block').html('<img class="w-100" src="' + jdata.data[0].url + '">');
+                $('#image-block').html('<img class="w-100" src="' + data + '">');
                 $('#spinner').hide(); // hide the spinner after receiving the response
                 $('#submit-btn').prop('disabled', false); // enable the button
             }
