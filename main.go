@@ -5,10 +5,12 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"strings"
 )
 
 func main() {
+
 	http.HandleFunc("/", handler)
 	http.HandleFunc("/gen", generateHandler)
 
@@ -54,7 +56,9 @@ func generateHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(err)
 		return
 	}
-	req.Header.Add("Authorization", "Bearer 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")
+	openaiKey := os.Getenv("OPENAI_KEY") //Your API key
+
+	req.Header.Add("Authorization", "Bearer "+openaiKey)
 	req.Header.Add("Content-Type", "application/json")
 
 	res, err := client.Do(req)
