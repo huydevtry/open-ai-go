@@ -25,10 +25,24 @@ func handler(w http.ResponseWriter, r *http.Request) {
 }
 
 type Response struct {
+type RespSuccess struct {
 	Created int64
 	Data    []struct {
 		Url string
 	}
+}
+
+	Error struct {
+		Code    string
+		Message string
+		Param   string
+		Type    string
+	}
+}
+
+type DataResponse struct {
+	StatusCode int
+	Data       string
 }
 
 func generateHandler(w http.ResponseWriter, r *http.Request) {
@@ -74,10 +88,28 @@ func generateHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(err)
 		return
 	}
+	fmt.Println(string(body))
 
-	var response Response
-	json.Unmarshal([]byte(body), &response)
+	if res.StatusCode == http.StatusBadRequest || res.StatusCode == http.StatusUnauthorized {
+		var respFail RespFail
+		json.Unmarshal([]byte(body), &respFail)
+		response, err := json.Marshal(DataResponse{1, respFail.Error.Message})
+		if err != nil {
+			panic(err)
+		}
+		// Send response
+		fmt.Fprintf(w, "%s", response)
+		return
+	}
 
+	var respSuccess RespSuccess
+	json.Unmarshal([]byte(body), &respSuccess)
+
+	response, err := json.Marshal(DataResponse{0, respSuccess.Data[0].Url})
+	if err != nil {
+		panic(err)
+	}
 	// Send response
-	fmt.Fprintf(w, "%s", response.Data[0].Url)
+	fmt.Fprintf(w, "%s", response)
+	return
 }

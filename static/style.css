@@ -1,10 +1,16 @@
-.spinner {
-    border: 5px solid rgba(0, 0, 0, 0.1);
-    border-top-color: #333;
-    border-radius: 50%;
-    width: 30px;
-    height: 30px;
-    animation: spin 1s ease-in-out infinite;
+#desc {
+    font-family: 'Roboto Mono', monospace;
+    border-left: thick solid #393838;
+    padding-left: 2rem;
+
+}
+
+#alert {
+    font-family: 'Roboto Mono', monospace;
+    border-left: thick solid red;
+    color: red;
+    padding-left: 2rem;
+
 }
 @keyframes spin {
     0% {
@@ -12,11 +18,5 @@
     }
     100% {
         transform: rotate(360deg);
-    }
-}
-
-@media screen and (max-width: 600px) {
-    .input-form{
-        /* font-size: 2rem; */
     }
 }
