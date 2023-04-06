@@ -24,7 +24,6 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, "main.html")
 }
 
-type Response struct {
 type RespSuccess struct {
 	Created int64
 	Data    []struct {
@@ -32,6 +31,7 @@ type RespSuccess struct {
 	}
 }
 
+type RespFail struct {
 	Error struct {
 		Code    string
 		Message string
