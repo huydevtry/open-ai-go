@@ -9,6 +9,7 @@ $(document).ready(function () {
             $('#alert').html('Error: content cannot be empty.'); // display an error message if the "content" input is empty
             return;
         }
+        $('#image-block').attr("style", 'filter: blur(8px)')
         $('#submit-btn').prop('disabled', true); // disable the button
         $('#text').val('');
         $('#alert').html('');
@@ -25,6 +26,8 @@ $(document).ready(function () {
                 if (dataObj.StatusCode === 0) {
                     $('#desc').html(content);
                     $('#image-block').attr("src", dataObj.Data)
+                    $('#image-block').attr("style", 'filter: blur(0px)')
+
                 } else {
                     $('#alert').html(dataObj.Data);
 
