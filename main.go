@@ -11,17 +11,16 @@ import (
 
 func main() {
 
-	fs := http.FileServer(http.Dir("static"))
-	http.Handle("/static/", http.StripPrefix("/static/", fs))
+	fs := http.FileServer(http.Dir("view/static"))
+	http.Handle("/view/static/", http.StripPrefix("/view/static/", fs))
 
+	http.HandleFunc("/chat", handlerChat)
 	http.HandleFunc("/", handler)
+
 	http.HandleFunc("/gen", generateHandler)
+	http.HandleFunc("/ws", wsHandler)
 
 	http.ListenAndServe(":8080", nil)
-}
-
-func handler(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, "main.html")
 }
 
 type RespSuccess struct {
@@ -45,6 +44,12 @@ type DataResponse struct {
 	Data       string
 }
 
+//Main page
+func handler(w http.ResponseWriter, r *http.Request) {
+	http.ServeFile(w, r, "view/main.html")
+}
+
+//Generate image API
 func generateHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
@@ -111,5 +116,17 @@ func generateHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	// Send response
 	fmt.Fprintf(w, "%s", response)
-	return
+}
+
+//Handle websocket
+func wsHandler(w http.ResponseWriter, r *http.Request) {
+	wsServer := NewWebsocketServer()
+	go wsServer.Run()
+
+	ServeWs(wsServer, w, r)
+}
+
+func handlerChat(w http.ResponseWriter, r *http.Request) {
+	http.ServeFile(w, r, "view/chat.html")
+
 }
